@@ -27,23 +27,32 @@ Graph::Graph(){
 }
 
 bool Graph::isConnected(){
+    
     auto it = vertices.begin();
     ElementaryUnitNode* vertex = it->second;
     std::set<ElementaryUnitNode*> visitedNodes = bfs(vertex);
+
+    /*for(const auto& elemUnitPair : vertices){
+        if(visitedNodes.find(elemUnitPair.second) == visitedNodes.end())
+            std::cout << elemUnitPair.first << std::endl;
+    }*/
 
     for(const auto& pair : graph){
         for(ElementaryUnitNode* node : pair.second->elementaryUnits){
             if(visitedNodes.find(node) == visitedNodes.end())
                 return false;
         }
-    }    
+    }
+    
+    
+
     return true;
 }
 
 void Graph::constructZones(){
     for(std::string zoneId : getListOfZones()){
         //graph.insert({zoneId, new ZoneNode(zoneId)});
-        graph[zoneId] = new ZoneNode(zoneId);;
+        graph[zoneId] = new ZoneNode(zoneId);
     }
 }
 
@@ -109,7 +118,7 @@ std::set<ElementaryUnitNode*> Graph::bfs(ElementaryUnitNode* node){
             visited.insert(neigh);
 
             for(ElementaryUnitNode* adj: neigh->neighbors){
-                if(visited.find(adj) == visited.end()){
+                if(visited.find(adj) == visited.end()){ // if adjacent node is not visited
                     adjacents.push(adj);
                 }
             }
@@ -135,3 +144,4 @@ void Graph::computeWeightForZones(){
         pair.second->computeWeight(TOTAL_Y);
     }
 }
+

@@ -44,6 +44,8 @@ int main(int argc, char* argv[]) {
     Graph root;
     Graph comparing;
 
+    std::cout << "is Root Graph connected: " << root.isConnected() << std::endl;
+
     std::vector<ZoneNode*> rootGraph = root.getGraph();
     //std::vector<ZoneNode*> comparingGraph = getComparingGraph(rootGraph);
     std::vector<ZoneNode*> comparingGraph = comparing.getGraph();
@@ -54,6 +56,8 @@ int main(int argc, char* argv[]) {
     for(int i = 0; i < R; i++){
         perturbGraph(comparingGraph);
     }
+
+    //std::cout << "Is comparing Graph connected after perturbation: " << comparing.isConnected() << std::endl;
 
     std::vector<std::set<std::string>> comparingIds = extractIdsFromZones(comparingGraph);
 
