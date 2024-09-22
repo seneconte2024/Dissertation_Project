@@ -77,6 +77,8 @@ int main(int argc, char* argv[]) {
 	std::cout << "N01 = " << N_01 << std::endl;
 	std::cout << "N00 = " << N_00 << std::endl;
 
+    std::cout << "N11 + N10 + N01 + N00 = " << N_11 + N_10 + N_01 + N_00 << std::endl;
+
 	double RI = RandIndex(N_11, N_10, N_01, N_00);
 	double FM = FowlkesMallows(N_11, N_10, N_01);
 	double JI = JaccardIndex(N_11, N_10, N_01);
@@ -88,14 +90,16 @@ int main(int argc, char* argv[]) {
     std::cout << "===========================================================================" << std::endl;
 
     double Weighted_N11 = getWeightedN11(contingencyTable, rootGraph, comparingGraph);
-    double Weighted_N10 = getWeightedN10(contingencyTable, rootGraph, Weighted_N11);
-    double Weighted_N01 = getWeightedN01(contingencyTable, comparingGraph, Weighted_N11);
+    double Weighted_N10 = getWeightedN10(contingencyTable, rootGraph, comparingGraph, Weighted_N11);
+    double Weighted_N01 = getWeightedN01(contingencyTable, rootGraph, comparingGraph, Weighted_N11);
     double Weighted_N00 = getWeightedN00(contingencyTable, Weighted_N11, Weighted_N10, Weighted_N01);
 
     std::cout << "Weighted N11 = " << Weighted_N11 << std::endl;
     std::cout << "Weighted N10 = " << Weighted_N10 << std::endl;
     std::cout << "Weighted N01 = " << Weighted_N01 << std::endl;
     std::cout << "Weighted N00 = " << Weighted_N00 << std::endl;
+
+    std::cout << "Weighted N11 + Weighted N10 + Weighted N01 + Weighted N00 = " << Weighted_N11 + Weighted_N10 + Weighted_N01 + Weighted_N00 << std::endl;
 
     double WeightedRI = RandIndex(Weighted_N11, Weighted_N10, Weighted_N01, Weighted_N00);
 	double WeightedFM = FowlkesMallows(Weighted_N11, Weighted_N10, Weighted_N01);
