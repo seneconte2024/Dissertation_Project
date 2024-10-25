@@ -35,15 +35,23 @@ void computeWeightForZones(std::vector<ZoneNode*> graph, int TOTAL_Y){
 
 
 int main(int argc, char* argv[]) {
-    if(argc < 3){
-        std::cout << "Please, pass the number of iteration and number of tests to be done" << std::endl;
+    if(argc < 4){
+        std::cout << "Please, pass the correct number of parameters. Number of iteration, Total samples to be done and index type" << std::endl;
         return -1;
     }
     int R = std::stoi(argv[1]);
     int N = std::stoi(argv[2]);
+    std::string indexType = argv[3];
 
-    std::vector<double> testResultValuesTradPairCount;
-    std::vector<double> testResultValuesWeightedPairCount;
+    double min_value = 1;
+    double max_value = 0;
+    double sum_index_values = 0;
+    double weighted_min_value = 1;
+    double weighted_max_value = 0;
+    double weighted_sum_index_values = 0;
+    double indexValue;
+    double weightedIndexValue;
+    int Total_Sample = N;
     while(N > 0){
     
         Graph root;
@@ -77,22 +85,21 @@ int main(int argc, char* argv[]) {
         int N_01 = getN01(contingencyTable, N_11);
         int N_00 = getN00(contingencyTable, N_11, N_10, N_01);
 
-        /*std::cout << "N11 = " << N_11 << std::endl;
-        std::cout << "N10 = " << N_10 << std::endl;
-        std::cout << "N01 = " << N_01 << std::endl;
-        std::cout << "N00 = " << N_00 << std::endl;*/
+        if (indexType == "RI") {
+            indexValue = RandIndex(N_11, N_10, N_01, N_00);
+        } else if (indexType == "FM") {
+            indexValue = FowlkesMallows(N_11, N_10, N_01);
+        } else if (indexType == "JI") {
+            indexValue = JaccardIndex(N_11, N_10, N_01);
+        } else {
+            std::cerr << "Error: Invalid index type. Please enter RI, FM, or JI." << std::endl;
+            return EXIT_FAILURE; // Returns an error code (typically 1)
+        }
 
-        //std::cout << "N11 + N10 + N01 + N00 = " << N_11 + N_10 + N_01 + N_00 << std::endl;
-
-        double RI = RandIndex(N_11, N_10, N_01, N_00);
-        //double FM = FowlkesMallows(N_11, N_10, N_01);
-        //double JI = JaccardIndex(N_11, N_10, N_01);
-
-        /*std::cout << "RI = " << RI << std::endl;
-        std::cout << "FM = " << FM << std::endl;
-        std::cout << "JI = " << JI << std::endl;*/
-
-        testResultValuesTradPairCount.push_back(RI);
+        // update max, min and sum of the index experience.
+        min_value = std::min(min_value, indexValue);
+        max_value = std::max(max_value, indexValue);
+        sum_index_values += indexValue;
 
         //std::cout << "===========================================================================" << std::endl;
 
@@ -101,42 +108,36 @@ int main(int argc, char* argv[]) {
         double Weighted_N01 = getWeightedN01(contingencyTable, rootGraph, comparingGraph, Weighted_N11);
         double Weighted_N00 = getWeightedN00(contingencyTable, Weighted_N11, Weighted_N10, Weighted_N01);
 
-        /*std::cout << "Weighted N11 = " << Weighted_N11 << std::endl;
-        std::cout << "Weighted N10 = " << Weighted_N10 << std::endl;
-        std::cout << "Weighted N01 = " << Weighted_N01 << std::endl;
-        std::cout << "Weighted N00 = " << Weighted_N00 << std::endl;*/
+        if (indexType == "RI") {
+            weightedIndexValue = RandIndex(Weighted_N11, Weighted_N10, Weighted_N01, Weighted_N00);
+        } else if (indexType == "FM") {
+            weightedIndexValue = FowlkesMallows(Weighted_N11, Weighted_N10, Weighted_N01);
+        } else if (indexType == "JI") {
+            weightedIndexValue = JaccardIndex(Weighted_N11, Weighted_N10, Weighted_N01);
+        } else {
+            std::cerr << "Error: Invalid index type. Please enter RI, FM, or JI." << std::endl;
+            return EXIT_FAILURE; // Returns an error code (typically 1)
+        }
 
-        //std::cout << "Weighted N11 + Weighted N10 + Weighted N01 + Weighted N00 = " << Weighted_N11 + Weighted_N10 + Weighted_N01 + Weighted_N00 << std::endl;
+        // update max, min and sum of the weighted index experience.
+        weighted_min_value = std::min(weighted_min_value, weightedIndexValue);
+        weighted_max_value = std::max(weighted_max_value, weightedIndexValue);
+        weighted_sum_index_values += weightedIndexValue;
 
-        double WeightedRI = RandIndex(Weighted_N11, Weighted_N10, Weighted_N01, Weighted_N00);
-        //double WeightedFM = FowlkesMallows(Weighted_N11, Weighted_N10, Weighted_N01);
-        //double WeightedJI = JaccardIndex(Weighted_N11, Weighted_N10, Weighted_N01);
-
-        /*std::cout << "Weighted RI = " << WeightedRI << std::endl;
-        std::cout << "Weighted FM = " << WeightedFM << std::endl;
-        std::cout << "Weighted JI = " << WeightedJI << std::endl;*/
-
-        testResultValuesWeightedPairCount.push_back(WeightedRI);
         N--;
     }
 
-    std::sort(testResultValuesTradPairCount.begin(), testResultValuesTradPairCount.end());
+    double average_index_value = sum_index_values/ Total_Sample;
+    std::cout << "Min Value " << indexType << " =" << min_value << std::endl;
+    std::cout << "Average Value " << indexType << " =" << average_index_value << std::endl;
+    std::cout << "Max Value " << indexType << " =" << max_value << std::endl;
 
-    // Output sorted result of traditional RI
-    for(double val : testResultValuesTradPairCount)
-        std::cout << val << " ";
+    std::cout << "===========================================================================" << std::endl;   
+
+    double weighted_average_values = weighted_sum_index_values / Total_Sample;
+    std::cout << "Weighted Min Value " << indexType << " =" << weighted_min_value << std::endl;
+    std::cout << "Weighted average Value " << indexType << " =" << weighted_average_values << std::endl;
+    std::cout << "Weighted Max Value " << indexType << " =" << weighted_max_value << std::endl; 
     
-    std::cout << std::endl;
-
-    std::cout << "===========================================================================" << std::endl;
-    
-    std::sort(testResultValuesWeightedPairCount.begin(), testResultValuesWeightedPairCount.end());
-
-    // Output sorted result of Weighted RI
-    for(double val : testResultValuesWeightedPairCount)
-        std::cout << val << " ";
-
-    std::cout << std::endl;
-
     return 0;
 }
